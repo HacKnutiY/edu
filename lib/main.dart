@@ -1,27 +1,18 @@
-import 'package:edu/routes/add_note_screen.dart';
-import 'package:edu/routes/folders_data_screen.dart';
-import 'package:edu/routes/home.dart';
-import 'package:edu/routes/notes_folders_screen.dart';
+import 'package:edu/entities/group.dart';
+import 'package:edu/widgets/app.dart';
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
-void main() {
-  runApp(MyApp());
-}
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
 
-class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      routes: {
-        '/home/': (context) => HomeScreen(),
-        '/home/notes_folders/': (context) => NotesFoldersScreen(),
-        '/home/notes_folders/folder_data/': (context) => FolderDataScreen(),
-        '/home/notes_folders/folder_data/add_note/': (context) =>
-            NoteAddingScreen(),
-      },
-      initialRoute: '/home/',
-    );
+  await Hive.initFlutter();
+
+  if (!Hive.isAdapterRegistered(0)) {
+    Hive.registerAdapter(GroupAdapter());
   }
+
+  await Hive.openBox<Group>("groupsBox");
+
+  runApp(MyApp());
 }
