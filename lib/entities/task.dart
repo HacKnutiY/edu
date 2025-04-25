@@ -1,34 +1,29 @@
-import 'package:edu/entities/task.dart';
-import 'package:edu/models/groups_model.dart';
+import 'package:edu/models/group_tasks_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-part 'group.g.dart';
+import 'package:hive/hive.dart';
 
-@HiveType(typeId: 0)
-class Group extends HiveObject{
+part 'task.g.dart';
+
+@HiveType(typeId: 1)
+class Task extends HiveObject {
   @HiveField(0)
-  String name;
+  String title;
 
-  //конфликт с полем индекса 1, поэтому пока так
-  @HiveField(2)
-  HiveList<Task>? tasks;
+  @HiveField(1)
+  bool isDone;
 
-  Group({
-    required this.name,
+  Task({
+    required this.title,
+    required this.isDone,
   });
-
-  void addTask(Box<Task> box, Task task) {
-    tasks ??= HiveList(box);
-    tasks?.add(task);
-  }
 }
 
-class GroupWidget extends StatelessWidget {
+class TaskWidget extends StatelessWidget {
   int index;
   String name;
 
-  GroupWidget({
+  TaskWidget({
     required this.name,
     required this.index,
     super.key,
@@ -36,14 +31,18 @@ class GroupWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    GroupsModel? model = GroupsModelProvider.watch(context);
+    GroupTasksModel? model = GroupTasksProvider.watch(context);
+    //при отрисовке можно получить группу по индексу, не по ключу
+    Task? task = model?.group?.tasks?[index];
+    Icon icon = task?.isDone == true ? Icon(Icons.done) : Icon(Icons.close);
+    print(task?.isDone);
 
     return Slidable(
       startActionPane: ActionPane(
         motion: const ScrollMotion(),
         children: [
           SlidableAction(
-            onPressed: (context) => model?.deleteGroup(index),
+            onPressed: (context) => model?.deleteTask(index),
             backgroundColor: const Color(0xFFFE4A49),
             foregroundColor: const Color.fromARGB(255, 255, 255, 255),
             icon: Icons.delete,
@@ -52,12 +51,12 @@ class GroupWidget extends StatelessWidget {
         ],
       ),
       child: GestureDetector(
-        onTap: () => model?.showGroupTasks(context, index),
+        onTap: () => model?.toggleDone(index),
         child: ListTile(
           title: Text(
             name.toString(),
           ),
-          trailing: const Icon(Icons.chevron_right),
+          trailing: icon,
         ),
       ),
     );

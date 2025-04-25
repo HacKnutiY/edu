@@ -49,7 +49,7 @@ class TBWidget extends StatelessWidget {
         NewGroupModelProvider.watch(context)?.model.saveToBox();
         Navigator.pop(context);
       },
-      child: const Text("Save"),
+      child: const Text("Save group"),
     );
   }
 }

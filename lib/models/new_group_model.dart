@@ -12,10 +12,10 @@ class NewGroupModel {
       }
       if (!Hive.isBoxOpen("groupsBox")) {
         var box = await Hive.openBox<Group>("groupsBox");
-        await box.add(Group(name: groupName, index: box.values.length));
+        await box.add(Group(name: groupName,));
       } else {
         var box = await Hive.box<Group>("groupsBox");
-        await box.add(Group(name: groupName, index: box.values.length));
+        await box.add(Group(name: groupName,));
       }
     }
   }
